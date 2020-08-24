@@ -5,12 +5,12 @@
   
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <link rel="dns-prefetch" href="http://buqiugouda.gitee.io/myblog">
+  <link rel="dns-prefetch" href="http://buqiugouda.gitee.io">
   <title>buqiugouda的博客主页</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta property="og:type" content="website">
 <meta property="og:title" content="buqiugouda的博客主页">
-<meta property="og:url" content="http://buqiugouda.gitee.io/myblog/index.html">
+<meta property="og:url" content="http://buqiugouda.gitee.io/index.html">
 <meta property="og:site_name" content="buqiugouda的博客主页">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="李宏林">
@@ -251,7 +251,7 @@
 <p>文章大意是说,使用 npm install <a target="_blank" rel="noopener" href="https://github.com/CodeFalling/hexo-asset-image">https://github.com/CodeFalling/hexo-asset-image</a> –save 安装0.0.5版本的hexo-asset-image插件。 使用 npm install hexo-asset-image –save 安装的是1.0.0版本的hexo-asset-image插件。 两者最直接的区别是映射关系不同。 </p>
 <p>也就是因为插件版本更新了，之前的使用方法有所变化，于是我安装了0.0.5版本的插件，就成功加载图片了.</p>
 <h4 id="hexo-在码云上使用时的样式和图片404异常"><a href="#hexo-在码云上使用时的样式和图片404异常" class="headerlink" title="hexo 在码云上使用时的样式和图片404异常"></a>hexo 在码云上使用时的样式和图片404异常</h4><p>hexo 博客搭桥到github 对 _config.yml 下的配置基本没有改动。但同样的配置部署到gitee后,却出现样式文件404导致显示出现很多异常。</p>
-<p>异常内容形如<br><img src="/myblog/myblog/2019/08/21/hexo%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE/350307b1.png"></p>
+<p>异常内容形如<br><img src="/myblog/2019/08/21/hexo%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE/350307b1.png"></p>
 <p>百度了很多的帖子,也翻阅了gitee的API文档 <a target="_blank" rel="noopener" href="https://gitee.com/help/articles/4136#article-header0" title="码云Pages">码云Pages</a><br>大致都是说由于gitee部署的page服务,使用的域名后携带了项目名称,导致样式文件和图片的相对路径不正常,本地预览博客正常,上线后会出错。 于是在 _config.yml 中进行了如下配置</p>
 <pre><code class="yaml">url: http://buqiugouda.gitee.io/myblog
 root: /myblog</code></pre>
