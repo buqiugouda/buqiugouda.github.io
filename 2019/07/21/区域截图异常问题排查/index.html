@@ -5,41 +5,41 @@
   
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <link rel="dns-prefetch" href="http://buqiugouda.gitee.io">
+  <link rel="dns-prefetch" href="http://example.com">
   <title>区域截图异常问题排查 | buqiugouda的博客主页</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="需求描述上个月开发了一个业务功能，整体的流程是通过配置的定时任务，在触发时刻将使用谷歌的爬虫工具selenium在后台通过用户的身份登录公司的报表系统门户中，查看配置的某些报表，进行截图后将图片信息结合配置的内容排版，通过邮件发送到用户邮箱中。就是这样一个简单的需求，但缺因为自己的不细心不自信，加上连续遇上了两个外部jar包的bug，耗费了一整天的时间还加班到凌晨。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="区域截图异常问题排查">
-<meta property="og:url" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/index.html">
+<meta property="og:url" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/index.html">
 <meta property="og:site_name" content="buqiugouda的博客主页">
 <meta property="og:description" content="需求描述上个月开发了一个业务功能，整体的流程是通过配置的定时任务，在触发时刻将使用谷歌的爬虫工具selenium在后台通过用户的身份登录公司的报表系统门户中，查看配置的某些报表，进行截图后将图片信息结合配置的内容排版，通过邮件发送到用户邮箱中。就是这样一个简单的需求，但缺因为自己的不细心不自信，加上连续遇上了两个外部jar包的bug，耗费了一整天的时间还加班到凌晨。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595324550060.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/screenshot4011539626072935834_complete_20200721205449.jpg">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/243945938171462886942_1595335555972.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/screenshot263478830502424703_complete_20200722100018.jpg">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/screenshot263478830502424703_shot_20200722100018.jpg">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E7%94%BB%E5%B8%83div%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E5%8E%9F%E7%82%B9%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E5%8F%8C%E5%80%8D%E7%94%BB%E5%B8%83div%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E5%8F%8C%E5%80%8D%E5%8E%9F%E7%82%B9%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E5%8F%8C%E5%80%8D%E5%8E%9F%E7%82%B9%E5%BE%AE%E8%B0%83%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595396629702.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595405941568.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595406306543.png">
-<meta property="og:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595407306025.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595324550060.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/screenshot4011539626072935834_complete_20200721205449.jpg">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/243945938171462886942_1595335555972.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/screenshot263478830502424703_complete_20200722100018.jpg">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/screenshot263478830502424703_shot_20200722100018.jpg">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E7%94%BB%E5%B8%83div%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E5%8E%9F%E7%82%B9%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E5%8F%8C%E5%80%8D%E7%94%BB%E5%B8%83div%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E5%8F%8C%E5%80%8D%E5%8E%9F%E7%82%B9%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/%E5%8F%8C%E5%80%8D%E5%8E%9F%E7%82%B9%E5%BE%AE%E8%B0%83%E8%B5%B7%E7%82%B9%E6%88%AA%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595396629702.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595405941568.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595406306543.png">
+<meta property="og:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595407306025.png">
 <meta property="article:published_time" content="2019-07-21T08:54:46.000Z">
 <meta property="article:modified_time" content="2022-08-03T02:49:06.349Z">
 <meta property="article:author" content="李宏林">
 <meta property="article:tag" content="工作踩坑">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://buqiugouda.gitee.io/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595324550060.png">
+<meta name="twitter:image" content="http://example.com/2019/07/21/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/1595324550060.png">
   
     <link rel="alternative" href="/atom.xml" title="buqiugouda的博客主页" type="application/atom+xml">
   
   
-    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/myblog/favicon.ico">
   
   <link rel="stylesheet" type="text/css" href="/./main.0cf68a.css">
   <style type="text/css">
@@ -470,11 +470,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">spring boot 学习</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">spring boot 学习</a>
+                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
               </li>
              
               <li class="article-tag-list-item">
