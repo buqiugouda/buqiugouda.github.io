@@ -1,0 +1,234 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>SpringColud核心组件浅析 | buqiugouda的博客主页</title><meta name="author" content="不求勾搭"><meta name="copyright" content="不求勾搭"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Spring Cloud包含了众多的组件,涉及了相当多的技术栈,本文只总结一些高频核心组件的使用概念。  业务场景首先虚构一个电商行业业务场景  创建一个订单，当用户支付了这个订单后，更新订单状态 扣减订单商品的库存 通知物流中心发货 为下单的用户增加积分  对于上述场景，需要创建 订单服务、库存服务、仓库服务、积分服务，运作流程图如下   Eureka 服务注册中心首先考虑第一个问题: 订单服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringColud核心组件浅析">
+<meta property="og:url" content="http://buqiugouda.gitee.io/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/index.html">
+<meta property="og:site_name" content="buqiugouda的博客主页">
+<meta property="og:description" content="Spring Cloud包含了众多的组件,涉及了相当多的技术栈,本文只总结一些高频核心组件的使用概念。  业务场景首先虚构一个电商行业业务场景  创建一个订单，当用户支付了这个订单后，更新订单状态 扣减订单商品的库存 通知物流中心发货 为下单的用户增加积分  对于上述场景，需要创建 订单服务、库存服务、仓库服务、积分服务，运作流程图如下   Eureka 服务注册中心首先考虑第一个问题: 订单服务">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://buqiugouda.gitee.io/img/covers/cover3.png">
+<meta property="article:published_time" content="2020-01-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-02-09T17:22:36.544Z">
+<meta property="article:author" content="不求勾搭">
+<meta property="article:tag" content="Spring Cloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://buqiugouda.gitee.io/img/covers/cover3.png"><link rel="shortcut icon" href="/myblog/img/favicon.ico"><link rel="canonical" href="http://buqiugouda.gitee.io/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/myblog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/myblog/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SpringColud核心组件浅析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-02-10 01:22:36'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = url => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      link.onload = () => resolve()
+      link.onerror = () => reject()
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://portrait.gitee.com/uploads/avatars/user/196/590832_buqiugouda_1620800091.png!avatar200" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myblog/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/myblog/tags/"><div class="headline">标签</div><div class="length-num">7</div></a><a href="/myblog/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myblog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/myblog/img/covers/cover3.png')"><nav id="nav"><span id="blog-info"><a href="/myblog/" title="buqiugouda的博客主页"><span class="site-name">buqiugouda的博客主页</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myblog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">SpringColud核心组件浅析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-01-29T16:00:00.000Z" title="发表于 2020-01-30 00:00:00">2020-01-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-02-09T17:22:36.544Z" title="更新于 2023-02-10 01:22:36">2023-02-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myblog/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myblog/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring-Cloud/">Spring Cloud</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>Spring Cloud包含了众多的组件,涉及了相当多的技术栈,本文只总结一些高频核心组件的使用概念。</p>
+<p><img src="/myblog/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/1675933716545.jpg" alt="1675933716545"></p>
+<h2 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景"></a>业务场景</h2><p>首先虚构一个电商行业业务场景</p>
+<ul>
+<li>创建一个订单，当用户支付了这个订单后，更新订单状态</li>
+<li>扣减订单商品的库存</li>
+<li>通知物流中心发货</li>
+<li>为下单的用户增加积分</li>
+</ul>
+<p>对于上述场景，需要创建 <strong>订单服务</strong>、<strong>库存服务</strong>、<strong>仓库服务</strong>、<strong>积分服务</strong>，运作流程图如下</p>
+<p><img src="/myblog/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/1675931741354.png" alt="1675931741354"></p>
+<hr>
+<h2 id="Eureka-服务注册中心"><a href="#Eureka-服务注册中心" class="headerlink" title="Eureka 服务注册中心"></a>Eureka 服务注册中心</h2><p>首先考虑第一个问题: <code>订单服务想要调用库存服务、仓储服务，或者是积分服务，怎么调用？</code><br>订单服务在不清楚其他服务的地址时，根本无法构造一个请求。而Eureka作为微服务架构中的注册中心，专门负责服务的注册与发现。</p>
+<p><img src="/myblog/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/1675950030085.png" alt="1675950030085"></p>
+<p>如上图所示，库存服务、仓储服务、积分服务中都有一个Eureka Client组件，这个组件负责将自身服务的信息注册到Eureka Server中，Eureka Server中有一个注册表，保存了各服务所在的机器和端口号。</p>
+<p>订单服务里也有一个Eureka Client组件，当订单服务需要访问库存服务时，就会通过Eureka Client组件找Eureka Server问一下：库存服务在哪台机器啊？监听着哪个端口啊？仓库服务呢？积分服务呢？然后就可以把这些相关信息从Eureka Server的注册表中拉取到自己本地缓存起来。</p>
+<p>小结：</p>
+<ul>
+<li>Eureka Server：注册中心，里面有一个注册表，保存了各个服务所在的机器和端口号</li>
+<li>Eureka Client：负责将这个服务的信息注册到Eureka Server中，并在需要时拉取Eureka Server的注册信息</li>
+</ul>
+<h2 id="Feign-动态代理"><a href="#Feign-动态代理" class="headerlink" title="Feign 动态代理"></a>Feign 动态代理</h2><p>现在订单服务已经知道库存服务、积分服务、仓库服务的地址信息了。但是新问题又来了，每次订单服务与其他服务的交互，必然涉及到,跟其他服务建立网络连接，然后构造一个复杂的请求，接着发送请求过去，最后对返回的响应结果进行解析。<code>这大量的代码是否存在一种简单的方式去替代呢？</code></p>
+<p>回想下未使用工具类前使用原生java代码发送http请求、附加参数、解析回调等代码，想想都让人打脑壳。而Feign为我们提供了更加优雅的解决方案。示意代码如下。</p>
+<p>库存服务接口</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@FeignClient(&quot;invertory-service&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">InventoryService</span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 扣减指定商品的库存</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@RequestMapping(value &quot;/reducestock/&#123;goodsskuId&#125;&quot;, method HttpMethod.PUT)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> Resultcode <span class="title function_">reducestock</span><span class="params">(<span class="meta">@Pathvariable(&quot;goodsskuId&quot;)</span> Long goodsskuId)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>订单服务使用该接口</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">orderservice</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> Inventoryservice inventoryservice;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Resultcode <span class="title function_">payorder</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">//步骤1：更新本地数据库订单状态为“已支付”</span></span><br><span class="line">        orderDAO.updatestatus(id,orderstatus.PAYED);</span><br><span class="line">        <span class="comment">//步骤2：调用库存服务，扣减商品库存</span></span><br><span class="line">        inventoryService.reducestock(goodsskuId);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Feign在接口中加入了很多注解，将库存服务提供的具体服务定义成接口方法，直接在service层进行引用。开发人员进行简单的配置就能更聚焦业务功能的编码，服务请求过程中的建立连接、构造请求、发起请求、获取回调、解析响应等工作，都被组件所隐藏了。服务间的调用就像单体服务编码时，不同service的注入一样方便。</p>
+<p>而它的底层实现，最关键的机制就是<strong>动态代理</strong>。</p>
+<ul>
+<li>首先，如果你对某个接口定义了<code>@FeignClient</code>注解，Feign就会针对这个接口创建一个动态代理</li>
+<li>接着你要是调用那个接口，本质就是会调用 Feign创建的动态代理，这是重中之重</li>
+<li>Feign的动态代理会根据你在接口上的<code>@RequestMapping</code>等注解，来动态构造出你要请求的服务的地址</li>
+<li>最后针对这个地址，发起请求、解析响应</li>
+</ul>
+<p><img src="/myblog/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/1675958898063.png" alt="1675958898063"></p>
+<h2 id="Ribbon-负载均衡组件"><a href="#Ribbon-负载均衡组件" class="headerlink" title="Ribbon 负载均衡组件"></a>Ribbon 负载均衡组件</h2><p>进入容器化时代，服务使用集群方式进行部署，假如库存服务部署在多个节点上，那么订单服务又该<code>如何判断请求那个节点的服务呢?</code></p>
+<ul>
+<li>192.168.2.169:9000</li>
+<li>192.168.2.168:9000</li>
+<li>192.168.2.167:9000</li>
+<li>192.168.2.166:9000</li>
+</ul>
+<p>Ribbon就是专门解决这个问题的。它的作用是负载均衡，会帮你在每次请求时选择一台机器，默认使用轮询算法，均匀的把请求分发到各个机器上。而且<strong>Ribbon是可以和Feign以及Eureka紧密协作来完成工作的</strong>，具体如下</p>
+<ul>
+<li>首先Ribbon会从 Eureka Client里获取到对应的服务注册表，也就知道了所有的服务的部署部署信息</li>
+<li>然后Ribbon就可以使用默认的Round Robin算法，从中选择一台机器(节点)</li>
+<li>Feign就会针对这台机器，构造并发起请求。</li>
+</ul>
+<p><img src="/myblog/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/1675960649326.png" alt="1675960649326"></p>
+<h2 id="Hystrix"><a href="#Hystrix" class="headerlink" title="Hystrix"></a>Hystrix</h2><p>在微服务架构里，一个系统会有很多的服务。以本文的业务场景为例：订单服务在一个业务流程里需要调用三个服务。现在假设订单服务自己最多只有100个线程可以处理请求，然后呢，积分服务不幸的挂了，每次订单服务调用积分服务的时候，都会卡住几秒钟，然后抛出—个超时异常。这将导致的问题<strong>服务雪崩</strong>。</p>
+<ol>
+<li>如果系统处于高并发的场景下，大量请求涌过来的时候，订单服务的100个线程都会卡在请求积分服务这块。导致订单服务没有能力处理后续的请求。</li>
+<li>然后就会导致别人请求订单服务的时候，发现订单服务也挂了，不响应任何请求了</li>
+</ol>
+<p>但是思考一下，合理的场景应该是，<code>即使积分服务挂了，订单服务也可以不用挂掉！</code></p>
+<ul>
+<li>我们结合业务来看：支付订单的时候，只要把库存扣减了，然后通知仓库发货就OK了。积分不是一个必要的环节</li>
+<li>即使积分服务挂了，大不了等他恢复之后，慢慢恢复数据！为啥一定要因为一个积分服务挂了，就直接导致订单服务也挂了呢？不可以接受！</li>
+</ul>
+<p>那么这类问题的解决方案，就是Hystrix。<strong>Hystrix是隔离、熔断以及降级的一个框架</strong>，Hystrix会搞很多个小小的线程池，比如订单服务请求库存服务是一个线程池，请求仓储服务是一个线程池，请求积分服务是一个线程池。每个线程池里的线程就仅仅用于请求那个服务。</p>
+<p>举个栗子：现在很不幸，积分服务挂了，会咋样？</p>
+<p>首先会导致订单服务里的那个用来调用积分服务的线程都卡死不能工作了！但是由于订单服务调用库存服务、仓储服务的这两个线程池都是正常工作的，所以这两个服务不会受到任何影响。</p>
+<p>这个时候如果别人请求订单服务，订单服务还是可以正常调用库存服务扣减库存，调用仓储服务通知发货。只不过调用积分服务的时候，每次都会报错。<strong>但是如果积分服务都挂了，每次调用都要去卡住几秒钟干啥呢？有意义吗？当然没有！</strong>所以我们直接对积分服务熔断的请求加入一个限制策略，比如在5分钟内请求积分服务直接就返回了，不要去走网络请求卡住几秒钟，这个过程，就是所谓的熔断！</p>
+<p>那人家又说，兄弟，<strong>积分服务挂了你就熔断，好歹你干点儿什么啊！别啥都不干就直接返回啊？</strong>没问题，咱们就来个降级：每次调用积分服务，你就在数据库里记录一条消息，说给某某用户增加了多少积分，因为积分服务挂了，导致没增加成功！这样等积分服务恢复了，你可以根据这些记录手工加一下积分。这个过程，就是所谓的降级。</p>
+<p><img src="/myblog/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/1675962025857.png" alt="1675962025857"></p>
+<h2 id="Zuul"><a href="#Zuul" class="headerlink" title="Zuul"></a>Zuul</h2><p>Zuul，也就是微服务网关。这个组件是负责网络路由的。</p>
+<p>假设你后台部署了几百个服务，前端要请求一下库存服务，难道需要记着这服务的名字叫做inventory-service？部署在192.168.2.169 192.168.2.168 等多少台机器上？大量的服务地址信息，任谁也记不住。</p>
+<p>上面这种情况，压根儿是不现实的。所以一般微服务架构中都必然会设计一个网关在里面，像android、ios、pc前端、微信小程序、H5等等，不用去关心后端有几百个服务，就知道有一个网关，所有请求都往网关走，网关会根据请求中的一些特征，将请求转发给后端的各个服务。Zuul可以作为单个组件，也可以配合Eureka进行转发(不同的配置规则)。</p>
+<p>而且有一个网关之后，还有很多好处，比如可以做统一的限流、认证授权、降级，等等。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><img src="/myblog/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/1675960805138.png" alt="1675960805138"></p>
+<hr>
+<blockquote>
+<p>参考链接<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42046105/article/details/83793787">https://blog.csdn.net/qq_42046105/article/details/83793787</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://buqiugouda.gitee.io">不求勾搭</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://buqiugouda.gitee.io/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/">http://buqiugouda.gitee.io/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://buqiugouda.gitee.io" target="_blank">buqiugouda的博客主页</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myblog/tags/Spring-Cloud/">Spring Cloud</a></div><div class="post_share"><div class="social-share" data-image="/myblog/img/covers/cover3.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/myblog/2019/11/10/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93/" title="设计模式总结"><img class="cover" src="/myblog/img/covers/cover3.png" onerror="onerror=null;src='/myblog/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">设计模式总结</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://portrait.gitee.com/uploads/avatars/user/196/590832_buqiugouda_1620800091.png!avatar200" onerror="this.onerror=null;this.src='/myblog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">不求勾搭</div><div class="author-info__description">路漫漫其修远兮，吾将上下而求索！</div></div><div class="card-info-data site-data is-center"><a href="/myblog/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/myblog/tags/"><div class="headline">标签</div><div class="length-num">7</div></a><a href="/myblog/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://gitee.com/buqiugouda"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">嗨害嗨，来啦😊。<br>这里有一些我个人编写的随笔、收集的一些资料文章，只是用于个人学习、加深记忆。如有侵权可以联系我</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">业务场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Eureka-%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">2.</span> <span class="toc-text">Eureka 服务注册中心</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Feign-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">Feign 动态代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ribbon-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%BB%84%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">Ribbon 负载均衡组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hystrix"><span class="toc-number">5.</span> <span class="toc-text">Hystrix</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Zuul"><span class="toc-number">6.</span> <span class="toc-text">Zuul</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2020/01/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Spring%20Cloud/SpringColud%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6%E6%B5%85%E6%9E%90/" title="SpringColud核心组件浅析">SpringColud核心组件浅析</a><time datetime="2020-01-29T16:00:00.000Z" title="发表于 2020-01-30 00:00:00">2020-01-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2019/11/10/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93/" title="设计模式总结">设计模式总结</a><time datetime="2019-11-09T16:00:00.000Z" title="发表于 2019-11-10 00:00:00">2019-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2019/10/15/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Linux/Linux%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" title="Linux命令手册">Linux命令手册</a><time datetime="2019-10-14T16:00:00.000Z" title="发表于 2019-10-15 00:00:00">2019-10-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2019/08/21/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/Jvm%E8%B0%83%E4%BC%98/%E8%AF%A6%E8%A7%A3class%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B/" title="(JVM - 二)详解class的加载过程">(JVM - 二)详解class的加载过程</a><time datetime="2019-08-21T10:24:50.000Z" title="发表于 2019-08-21 18:24:50">2019-08-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2019/07/21/%E5%B7%A5%E4%BD%9C%E8%B8%A9%E5%9D%91/%E5%8C%BA%E5%9F%9F%E6%88%AA%E5%9B%BE%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/" title="区域截图异常问题排查">区域截图异常问题排查</a><time datetime="2019-07-21T08:54:46.000Z" title="发表于 2019-07-21 16:54:46">2019-07-21</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/myblog/img/covers/cover3.png')"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2023 <i id="heartbeat" class="fa fas fa-heartbeat"></i> By 不求勾搭</div></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/myblog/js/utils.js"></script><script src="/myblog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script></div></body></html>
