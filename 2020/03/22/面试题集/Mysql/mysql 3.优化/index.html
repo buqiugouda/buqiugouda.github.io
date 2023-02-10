@@ -1,0 +1,235 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>MySql面试集 - (三) Mysql优化 | buqiugouda的博客主页</title><meta name="author" content="不求勾搭"><meta name="copyright" content="不求勾搭"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="如何定位及优化SQL语句的性能问题？对于低性能的SQL语句的定位，最重要也是最有效的方法就是使用执行计划，MySQL提供了explain命令来查看语句的执行计划。 我们知道，不管是哪种数据库，或者是哪种数据库引擎，在对一条SQL语句进行执行的过程中都会做很多相关的优化，对于查询语句，最重要的优化方式就是使用索引。  而执行计划，就是显示数据库引擎对于SQL语句的执行的详细情况，其中包含了是否使用索">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySql面试集 - (三) Mysql优化">
+<meta property="og:url" content="http://buqiugouda.gitee.io/2020/03/22/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%203.%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="buqiugouda的博客主页">
+<meta property="og:description" content="如何定位及优化SQL语句的性能问题？对于低性能的SQL语句的定位，最重要也是最有效的方法就是使用执行计划，MySQL提供了explain命令来查看语句的执行计划。 我们知道，不管是哪种数据库，或者是哪种数据库引擎，在对一条SQL语句进行执行的过程中都会做很多相关的优化，对于查询语句，最重要的优化方式就是使用索引。  而执行计划，就是显示数据库引擎对于SQL语句的执行的详细情况，其中包含了是否使用索">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://buqiugouda.gitee.io/img/covers/mysql.png">
+<meta property="article:published_time" content="2020-03-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-02-10T08:06:04.802Z">
+<meta property="article:author" content="不求勾搭">
+<meta property="article:tag" content="MySql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://buqiugouda.gitee.io/img/covers/mysql.png"><link rel="shortcut icon" href="/myblog/img/favicon.ico"><link rel="canonical" href="http://buqiugouda.gitee.io/2020/03/22/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%203.%E4%BC%98%E5%8C%96/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/myblog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/myblog/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'MySql面试集 - (三) Mysql优化',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-02-10 16:06:04'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = url => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      link.onload = () => resolve()
+      link.onerror = () => reject()
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://portrait.gitee.com/uploads/avatars/user/196/590832_buqiugouda_1620800091.png!avatar200" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myblog/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/myblog/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/myblog/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myblog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/myblog/img/covers/mysql.png')"><nav id="nav"><span id="blog-info"><a href="/myblog/" title="buqiugouda的博客主页"><span class="site-name">buqiugouda的博客主页</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myblog/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">MySql面试集 - (三) Mysql优化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-03-21T16:00:00.000Z" title="发表于 2020-03-22 00:00:00">2020-03-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-02-10T08:06:04.802Z" title="更新于 2023-02-10 16:06:04">2023-02-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myblog/categories/%E9%9D%A2%E8%AF%95%E9%9B%86/">面试集</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myblog/categories/%E9%9D%A2%E8%AF%95%E9%9B%86/MySql/">MySql</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="如何定位及优化SQL语句的性能问题？"><a href="#如何定位及优化SQL语句的性能问题？" class="headerlink" title="如何定位及优化SQL语句的性能问题？"></a>如何定位及优化SQL语句的性能问题？</h2><p>对于低性能的SQL语句的定位，最重要也是最有效的方法就是使用执行计划，MySQL提供了explain命令来查看语句的执行计划。 我们知道，不管是哪种数据库，或者是哪种数据库引擎，在对一条SQL语句进行执行的过程中都会做很多相关的优化，对于查询语句，最重要的优化方式就是使用索引。</p>
+<p> 而执行计划，就是显示数据库引擎对于SQL语句的执行的详细情况，其中包含了是否使用索引，使用什么索引，使用的索引的相关信息等。<br><img src="http://blog-img.coolsen.cn/img/image-20210822204026552.png" alt="image-20210822204026552"></p>
+<h2 id="大表数据查询，怎么优化"><a href="#大表数据查询，怎么优化" class="headerlink" title="大表数据查询，怎么优化"></a>大表数据查询，怎么优化</h2><ul>
+<li>优化shema、sql语句+索引；</li>
+<li>第二加缓存，memcached, redis；</li>
+<li>主从复制，读写分离；</li>
+<li>垂直拆分，根据你模块的耦合度，将一个大的系统分为多个小的系统，也就是分布式系统；</li>
+<li>水平切分，针对数据量大的表，这一步最麻烦，最能考验技术水平，要选择一个合理的sharding key, 为了有好的查询效率，表结构也要改动，做一定的冗余，应用也要改，sql中尽量带sharding key，将数据定位到限定的表上去查，而不是扫描全部的表；</li>
+</ul>
+<h2 id="超大分页怎么处理"><a href="#超大分页怎么处理" class="headerlink" title="超大分页怎么处理?"></a>超大分页怎么处理?</h2><p>数据库层面,这也是我们主要集中关注的(虽然收效没那么大),类似于 <code>select * from table where age &gt; 20 limit 1000000</code>,10 这种查询其实也是有可以优化的余地的. 这条语句需要 load1000000 数据然后基本上全部丢弃,只取 10 条当然比较慢. 当时我们可以修改为 <code>select * from table where id in (select id from table where age &gt; 20 limit 1000000,10)</code>.这样虽然也 load 了一百万的数据,但是由于索引覆盖,要查询的所有字段都在索引中,所以速度会很快。</p>
+<p>解决超大分页,其实主要是靠缓存,可预测性的提前查到内容,缓存至redis等k-V数据库中,直接返回即可.</p>
+<p>在阿里巴巴《Java开发手册》中,对超大分页的解决办法是类似于上面提到的第一种.</p>
+<blockquote>
+<p>【推荐】利用延迟关联或者子查询优化超多分页场景。</p>
+<p>说明：MySQL并不是跳过offset行，而是取offset+N行，然后返回放弃前offset行，返回N行，那当offset特别大的时候，效率就非常的低下，要么控制返回的总页数，要么对超过特定阈值的页数进行SQL改写。</p>
+<p>正例：先快速定位需要获取的id段，然后再关联：</p>
+<p>SELECT a.* FROM 表1 a, (select id from 表1 where 条件 LIMIT 100000,20 ) b where a.id=b.id</p>
+</blockquote>
+<h2 id="统计过慢查询吗？对慢查询都怎么优化过？"><a href="#统计过慢查询吗？对慢查询都怎么优化过？" class="headerlink" title="统计过慢查询吗？对慢查询都怎么优化过？"></a>统计过慢查询吗？对慢查询都怎么优化过？</h2><p>在业务系统中，除了使用主键进行的查询，其他的我都会在测试库上测试其耗时，慢查询的统计主要由运维在做，会定期将业务中的慢查询反馈给我们。</p>
+<p>慢查询的优化首先要搞明白慢的原因是什么？ 是查询条件没有命中索引？是load了不需要的数据列？还是数据量太大？</p>
+<p>所以优化也是针对这三个方向来的，</p>
+<ul>
+<li>首先分析语句，看看是否load了额外的数据，可能是查询了多余的行并且抛弃掉了，可能是加载了许多结果中并不需要的列，对语句进行分析以及重写。</li>
+<li>分析语句的执行计划，然后获得其使用索引的情况，之后修改语句或者修改索引，使得语句可以尽可能的命中索引。</li>
+<li>如果对语句的优化已经无法进行，可以考虑表中的数据量是否太大，如果是的话可以进行横向或者纵向的分表。</li>
+</ul>
+<h2 id="如何优化查询过程中的数据访问"><a href="#如何优化查询过程中的数据访问" class="headerlink" title="如何优化查询过程中的数据访问"></a>如何优化查询过程中的数据访问</h2><ul>
+<li>访问数据太多导致查询性能下降</li>
+<li>确定应用程序是否在检索大量超过需要的数据，可能是太多行或列</li>
+<li>确认MySQL服务器是否在分析大量不必要的数据行</li>
+<li>查询不需要的数据。解决办法：使用limit解决</li>
+<li>多表关联返回全部列。解决办法：指定列名</li>
+<li>总是返回全部列。解决办法：避免使用SELECT *</li>
+<li>重复查询相同的数据。解决办法：可以缓存数据，下次直接读取缓存</li>
+<li>是否在扫描额外的记录。解决办法：<br>使用explain进行分析，如果发现查询需要扫描大量的数据，但只返回少数的行，可以通过如下技巧去优化：<br>使用索引覆盖扫描，把所有的列都放到索引中，这样存储引擎不需要回表获取对应行就可以返回结果。</li>
+<li>改变数据库和表的结构，修改数据表范式</li>
+<li>重写SQL语句，让优化器可以以更优的方式执行查询。</li>
+</ul>
+<h2 id="如何优化关联查询"><a href="#如何优化关联查询" class="headerlink" title="如何优化关联查询"></a>如何优化关联查询</h2><ul>
+<li>确定ON或者USING子句中是否有索引。</li>
+<li>确保GROUP BY和ORDER BY只有一个表中的列，这样MySQL才有可能使用索引。</li>
+</ul>
+<h2 id="数据库结构优化"><a href="#数据库结构优化" class="headerlink" title="数据库结构优化"></a>数据库结构优化</h2><p>一个好的数据库设计方案对于数据库的性能往往会起到事半功倍的效果。</p>
+<p>需要考虑数据冗余、查询和更新的速度、字段的数据类型是否合理等多方面的内容。</p>
+<ol>
+<li><strong>将字段很多的表分解成多个表</strong></li>
+</ol>
+<p>对于字段较多的表，如果有些字段的使用频率很低，可以将这些字段分离出来形成新表。</p>
+<p>因为当一个表的数据量很大时，会由于使用频率低的字段的存在而变慢。</p>
+<ol start="2">
+<li><strong>增加中间表</strong></li>
+</ol>
+<p>对于需要经常联合查询的表，可以建立中间表以提高查询效率。</p>
+<p>通过建立中间表，将需要通过联合查询的数据插入到中间表中，然后将原来的联合查询改为对中间表的查询。</p>
+<ol start="3">
+<li><strong>增加冗余字段</strong></li>
+</ol>
+<p>设计数据表时应尽量遵循范式理论的规约，尽可能的减少冗余字段，让数据库设计看起来精致、优雅。但是，合理的加入冗余字段可以提高查询速度。</p>
+<p>表的规范化程度越高，表和表之间的关系越多，需要连接查询的情况也就越多，性能也就越差。</p>
+<p>注意：</p>
+<p>冗余字段的值在一个表中修改了，就要想办法在其他表中更新，否则就会导致数据不一致的问题。</p>
+<h2 id="MySQL数据库cpu飙升到500-的话他怎么处理？"><a href="#MySQL数据库cpu飙升到500-的话他怎么处理？" class="headerlink" title="MySQL数据库cpu飙升到500%的话他怎么处理？"></a>MySQL数据库cpu飙升到500%的话他怎么处理？</h2><p>当 cpu 飙升到 500%时，先用操作系统命令 top 命令观察是不是 MySQLd 占用导致的，如果不是，找出占用高的进程，并进行相关处理。</p>
+<p>如果是 MySQLd 造成的， show processlist，看看里面跑的 session 情况，是不是有消耗资源的 sql 在运行。找出消耗高的 sql，看看执行计划是否准确， index 是否缺失，或者实在是数据量太大造成。</p>
+<p>一般来说，肯定要 kill 掉这些线程(同时观察 cpu 使用率是否下降)，等进行相应的调整(比如说加索引、改 sql、改内存参数)之后，再重新跑这些 SQL。</p>
+<p>也有可能是每个 sql 消耗资源并不多，但是突然之间，有大量的 session 连进来导致 cpu 飙升，这种情况就需要跟应用一起来分析为何连接数会激增，再做出相应的调整，比如说限制连接数等。</p>
+<h2 id="大表怎么优化？"><a href="#大表怎么优化？" class="headerlink" title="大表怎么优化？"></a>大表怎么优化？</h2><p>类似的问题：某个表有近千万数据，CRUD比较慢，如何优化？分库分表了是怎么做的？分表分库了有什么问题？有用到中间件么？他们的原理知道么？</p>
+<p>当MySQL单表记录数过大时，数据库的CRUD性能会明显下降，一些常见的优化措施如下：</p>
+<ul>
+<li>限定数据的范围： 务必禁止不带任何限制数据范围条件的查询语句。比如：我们当用户在查询订单历史的时候，我们可以控制在一个月的范围内；</li>
+<li>读/写分离： 经典的数据库拆分方案，主库负责写，从库负责读；</li>
+<li>缓存： 使用MySQL的缓存，另外对重量级、更新少的数据可以考虑；</li>
+<li>通过分库分表的方式进行优化，主要有垂直分表和水平分表。</li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>参考地址</strong><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/ThinkWon/article/details/104778621">https://blog.csdn.net/ThinkWon/article/details/104778621</a><br><a target="_blank" rel="noopener" href="https://haicoder.net/note/mysql-interview/mysql-interview-mysql-binlog.html">https://haicoder.net/note/mysql-interview/mysql-interview-mysql-binlog.html</a><br><a target="_blank" rel="noopener" href="https://www.modb.pro/db/40241">https://www.modb.pro/db/40241</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/05da0fc0950e">https://www.jianshu.com/p/05da0fc0950e</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/ThinkWon/article/details/104778621">https://blog.csdn.net/ThinkWon/article/details/104778621</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://buqiugouda.gitee.io">不求勾搭</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://buqiugouda.gitee.io/2020/03/22/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%203.%E4%BC%98%E5%8C%96/">http://buqiugouda.gitee.io/2020/03/22/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%203.%E4%BC%98%E5%8C%96/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://buqiugouda.gitee.io" target="_blank">buqiugouda的博客主页</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myblog/tags/MySql/">MySql</a></div><div class="post_share"><div class="social-share" data-image="/myblog/img/covers/mysql.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myblog/2020/03/23/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%204.%E7%B4%A2%E5%BC%95/" title="MySql面试集 - (四) 索引篇"><img class="cover" src="/myblog/img/covers/mysql.png" onerror="onerror=null;src='/myblog/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">MySql面试集 - (四) 索引篇</div></div></a></div><div class="next-post pull-right"><a href="/myblog/2020/03/21/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%202.%E4%BA%8B%E5%8A%A1/" title="MySql面试集 - (二) 事务篇"><img class="cover" src="/myblog/img/covers/mysql.png" onerror="onerror=null;src='/myblog/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">MySql面试集 - (二) 事务篇</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/myblog/2020/03/20/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%201.%E5%9F%BA%E7%A1%80/" title="MySql面试集 - (一) 基础篇"><img class="cover" src="/myblog/img/covers/mysql.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-20</div><div class="title">MySql面试集 - (一) 基础篇</div></div></a></div><div><a href="/myblog/2020/03/21/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%202.%E4%BA%8B%E5%8A%A1/" title="MySql面试集 - (二) 事务篇"><img class="cover" src="/myblog/img/covers/mysql.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-21</div><div class="title">MySql面试集 - (二) 事务篇</div></div></a></div><div><a href="/myblog/2020/03/24/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%205.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" title="MySql面试集 - (五) 分库分表篇"><img class="cover" src="/myblog/img/covers/mysql.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-24</div><div class="title">MySql面试集 - (五) 分库分表篇</div></div></a></div><div><a href="/myblog/2020/03/25/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%206.%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/" title="MySql面试集 - (六) 读写分离篇"><img class="cover" src="/myblog/img/covers/mysql.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-25</div><div class="title">MySql面试集 - (六) 读写分离篇</div></div></a></div><div><a href="/myblog/2020/03/27/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%207.%E9%94%81/" title="MySql面试集 - (七) 锁篇"><img class="cover" src="/myblog/img/covers/mysql.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-27</div><div class="title">MySql面试集 - (七) 锁篇</div></div></a></div><div><a href="/myblog/2020/03/23/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%204.%E7%B4%A2%E5%BC%95/" title="MySql面试集 - (四) 索引篇"><img class="cover" src="/myblog/img/covers/mysql.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-23</div><div class="title">MySql面试集 - (四) 索引篇</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://portrait.gitee.com/uploads/avatars/user/196/590832_buqiugouda_1620800091.png!avatar200" onerror="this.onerror=null;this.src='/myblog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">不求勾搭</div><div class="author-info__description">路漫漫其修远兮，吾将上下而求索！</div></div><div class="card-info-data site-data is-center"><a href="/myblog/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/myblog/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/myblog/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://gitee.com/buqiugouda"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">嗨害嗨，来啦⚔️。<br>这里有我个人编写的随笔，也有收集的资料文章。<br>内容只用于个人学习、温故而知新。<br>如有侵权,可以联系我😊</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8D%E5%8F%8A%E4%BC%98%E5%8C%96SQL%E8%AF%AD%E5%8F%A5%E7%9A%84%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">如何定位及优化SQL语句的性能问题？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E8%A1%A8%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2%EF%BC%8C%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">大表数据查询，怎么优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B6%85%E5%A4%A7%E5%88%86%E9%A1%B5%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">超大分页怎么处理?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E8%BF%87%E6%85%A2%E6%9F%A5%E8%AF%A2%E5%90%97%EF%BC%9F%E5%AF%B9%E6%85%A2%E6%9F%A5%E8%AF%A2%E9%83%BD%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96%E8%BF%87%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">统计过慢查询吗？对慢查询都怎么优化过？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E6%9F%A5%E8%AF%A2%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE"><span class="toc-number">5.</span> <span class="toc-text">如何优化查询过程中的数据访问</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E5%85%B3%E8%81%94%E6%9F%A5%E8%AF%A2"><span class="toc-number">6.</span> <span class="toc-text">如何优化关联查询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84%E4%BC%98%E5%8C%96"><span class="toc-number">7.</span> <span class="toc-text">数据库结构优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL%E6%95%B0%E6%8D%AE%E5%BA%93cpu%E9%A3%99%E5%8D%87%E5%88%B0500-%E7%9A%84%E8%AF%9D%E4%BB%96%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86%EF%BC%9F"><span class="toc-number">8.</span> <span class="toc-text">MySQL数据库cpu飙升到500%的话他怎么处理？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E8%A1%A8%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96%EF%BC%9F"><span class="toc-number">9.</span> <span class="toc-text">大表怎么优化？</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2020/03/27/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%207.%E9%94%81/" title="MySql面试集 - (七) 锁篇">MySql面试集 - (七) 锁篇</a><time datetime="2020-03-26T16:00:00.000Z" title="发表于 2020-03-27 00:00:00">2020-03-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2020/03/25/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%206.%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/" title="MySql面试集 - (六) 读写分离篇">MySql面试集 - (六) 读写分离篇</a><time datetime="2020-03-24T16:00:00.000Z" title="发表于 2020-03-25 00:00:00">2020-03-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2020/03/24/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%205.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" title="MySql面试集 - (五) 分库分表篇">MySql面试集 - (五) 分库分表篇</a><time datetime="2020-03-23T16:00:00.000Z" title="发表于 2020-03-24 00:00:00">2020-03-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2020/03/23/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%204.%E7%B4%A2%E5%BC%95/" title="MySql面试集 - (四) 索引篇">MySql面试集 - (四) 索引篇</a><time datetime="2020-03-22T16:00:00.000Z" title="发表于 2020-03-23 00:00:00">2020-03-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/myblog/2020/03/22/%E9%9D%A2%E8%AF%95%E9%A2%98%E9%9B%86/Mysql/mysql%203.%E4%BC%98%E5%8C%96/" title="MySql面试集 - (三) Mysql优化">MySql面试集 - (三) Mysql优化</a><time datetime="2020-03-21T16:00:00.000Z" title="发表于 2020-03-22 00:00:00">2020-03-22</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/myblog/img/covers/mysql.png')"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2023 <i id="heartbeat" class="fa fas fa-heartbeat"></i> By 不求勾搭</div></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/HCLonely/images@master/others/heartbeat.min.css"></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/myblog/js/utils.js"></script><script src="/myblog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script></div></body></html>
